@@ -18,15 +18,16 @@ import (
 func TestGet(t *testing.T) {
 
 	tests := []struct {
-		description    string
-		source         resource.Source
-		version        resource.Version
-		parameters     resource.GetParameters
-		pullRequest    *resource.PullRequest
-		versionString  string
-		metadataString string
-		files          []resource.ChangedFileObject
-		filesString    string
+		description       string
+		source            resource.Source
+		version           resource.Version
+		parameters        resource.GetParameters
+		pullRequest       *resource.PullRequest
+		versionString     string
+		metadataString    string
+		metadataMapString string
+		files             []resource.ChangedFileObject
+		filesString       string
 	}{
 		{
 			description: "get works",
@@ -41,10 +42,11 @@ func TestGet(t *testing.T) {
 				ApprovedReviewCount: "0",
 				State:               githubv4.PullRequestStateOpen,
 			},
-			parameters:     resource.GetParameters{},
-			pullRequest:    createTestPR(1, "master", false, false, 0, nil, false, githubv4.PullRequestStateOpen),
-			versionString:  `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN"}`,
-			metadataString: `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
+			parameters:        resource.GetParameters{},
+			pullRequest:       createTestPR(1, "master", false, false, 0, nil, false, githubv4.PullRequestStateOpen),
+			versionString:     `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN"}`,
+			metadataString:    `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
+			metadataMapString: `{"author":"login1","author_email":"user@example.com","base_name":"master","base_sha":"sha","head_name":"pr1","head_sha":"oid1","message":"commit message1","pr":"1","state":"OPEN","title":"pr1 title","url":"pr1 url"}`,
 		},
 		{
 			description: "get supports unlocking with git crypt",
@@ -60,10 +62,11 @@ func TestGet(t *testing.T) {
 				ApprovedReviewCount: "0",
 				State:               githubv4.PullRequestStateOpen,
 			},
-			parameters:     resource.GetParameters{},
-			pullRequest:    createTestPR(1, "master", false, false, 0, nil, false, githubv4.PullRequestStateOpen),
-			versionString:  `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN"}`,
-			metadataString: `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
+			parameters:        resource.GetParameters{},
+			pullRequest:       createTestPR(1, "master", false, false, 0, nil, false, githubv4.PullRequestStateOpen),
+			versionString:     `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN"}`,
+			metadataString:    `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
+			metadataMapString: `{"author":"login1","author_email":"user@example.com","base_name":"master","base_sha":"sha","head_name":"pr1","head_sha":"oid1","message":"commit message1","pr":"1","state":"OPEN","title":"pr1 title","url":"pr1 url"}`,
 		},
 		{
 			description: "get supports rebasing",
@@ -81,9 +84,10 @@ func TestGet(t *testing.T) {
 			parameters: resource.GetParameters{
 				IntegrationTool: "rebase",
 			},
-			pullRequest:    createTestPR(1, "master", false, false, 0, nil, false, githubv4.PullRequestStateOpen),
-			versionString:  `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN"}`,
-			metadataString: `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
+			pullRequest:       createTestPR(1, "master", false, false, 0, nil, false, githubv4.PullRequestStateOpen),
+			versionString:     `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN"}`,
+			metadataString:    `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
+			metadataMapString: `{"author":"login1","author_email":"user@example.com","base_name":"master","base_sha":"sha","head_name":"pr1","head_sha":"oid1","message":"commit message1","pr":"1","state":"OPEN","title":"pr1 title","url":"pr1 url"}`,
 		},
 		{
 			description: "get supports checkout",
@@ -101,9 +105,10 @@ func TestGet(t *testing.T) {
 			parameters: resource.GetParameters{
 				IntegrationTool: "checkout",
 			},
-			pullRequest:    createTestPR(1, "master", false, false, 0, nil, false, githubv4.PullRequestStateOpen),
-			versionString:  `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN"}`,
-			metadataString: `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
+			pullRequest:       createTestPR(1, "master", false, false, 0, nil, false, githubv4.PullRequestStateOpen),
+			versionString:     `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN"}`,
+			metadataString:    `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
+			metadataMapString: `{"author":"login1","author_email":"user@example.com","base_name":"master","base_sha":"sha","head_name":"pr1","head_sha":"oid1","message":"commit message1","pr":"1","state":"OPEN","title":"pr1 title","url":"pr1 url"}`,
 		},
 		{
 			description: "get supports git_depth",
@@ -121,9 +126,10 @@ func TestGet(t *testing.T) {
 			parameters: resource.GetParameters{
 				GitDepth: 2,
 			},
-			pullRequest:    createTestPR(1, "master", false, false, 0, nil, false, githubv4.PullRequestStateOpen),
-			versionString:  `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN"}`,
-			metadataString: `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
+			pullRequest:       createTestPR(1, "master", false, false, 0, nil, false, githubv4.PullRequestStateOpen),
+			versionString:     `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN"}`,
+			metadataString:    `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
+			metadataMapString: `{"author":"login1","author_email":"user@example.com","base_name":"master","base_sha":"sha","head_name":"pr1","head_sha":"oid1","message":"commit message1","pr":"1","state":"OPEN","title":"pr1 title","url":"pr1 url"}`,
 		},
 		{
 			description: "get supports list_changed_files",
@@ -150,9 +156,10 @@ func TestGet(t *testing.T) {
 					Path: "Other.md",
 				},
 			},
-			versionString:  `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN"}`,
-			metadataString: `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
-			filesString:    "README.md\nOther.md\n",
+			versionString:     `{"pr":"pr1","commit":"commit1","committed":"0001-01-01T00:00:00Z","approved_review_count":"0","state":"OPEN"}`,
+			metadataString:    `[{"name":"pr","value":"1"},{"name":"title","value":"pr1 title"},{"name":"url","value":"pr1 url"},{"name":"head_name","value":"pr1"},{"name":"head_sha","value":"oid1"},{"name":"base_name","value":"master"},{"name":"base_sha","value":"sha"},{"name":"message","value":"commit message1"},{"name":"author","value":"login1"},{"name":"author_email","value":"user@example.com"},{"name":"state","value":"OPEN"}]`,
+			metadataMapString: `{"author":"login1","author_email":"user@example.com","base_name":"master","base_sha":"sha","head_name":"pr1","head_sha":"oid1","message":"commit message1","pr":"1","state":"OPEN","title":"pr1 title","url":"pr1 url"}`,
+			filesString:       "README.md\nOther.md\n",
 		},
 	}
 
@@ -184,6 +191,9 @@ func TestGet(t *testing.T) {
 
 				metadata := readTestFile(t, filepath.Join(dir, ".git", "resource", "metadata.json"))
 				assert.Equal(t, tc.metadataString, metadata)
+
+				metadataMap := readTestFile(t, filepath.Join(dir, ".git", "resource", "metadata-map.json"))
+				assert.Equal(t, tc.metadataMapString, metadataMap)
 
 				// Verify individual files
 				files := map[string]string{
